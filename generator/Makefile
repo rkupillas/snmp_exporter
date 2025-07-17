@@ -175,7 +175,6 @@ mibs: \
   $(MIBDIR)/CyberPower.MIB \
   $(MIBDIR)/EAP.MIB \
   $(MIBDIR)/EAP-Client.MIB \
-  $(MIBDIR)/powercom \
   $(MIBDIR)/.cisco_imc \
   $(MIBDIR)/.cisco-device \
   $(MIBDIR)/FROGFOOT-RESOURCES-MIB \
@@ -449,10 +448,6 @@ $(MIBDIR)/readydataos:
 	@unzip -j -d $(MIBDIR) $(TMP) READYDATAOS-MIB.txt
 	@mv -v $(MIBDIR)/READYDATAOS-MIB.txt $(MIBDIR)/readydataos
 	@rm -v $(TMP)
-
-$(MIBDIR)/powercom:
-	@echo ">> Downloading powercom"
-	@curl $(CURL_OPTS) -o $(MIBDIR)/powercom "$(POWERCOM_URL)"
 
 $(MIBDIR)/.cisco_imc:
 	@echo ">> Downloading Cisco UCS"

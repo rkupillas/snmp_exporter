@@ -1,0 +1,83 @@
+auths:
+  public_v1:
+    version: 1
+    community: "public"
+  public_v2: # No anchor definition here, as per your working file
+    version: 2
+    community: "public"
+
+modules:
+  # Standard system information (often useful for any device)
+  system:
+    walk:
+      - "SNMPv2-MIB::system"
+    max_repetitions: 1
+    timeout: 15s
+    lookups:
+      - source_indexes: [sysORIndex]
+        lookup: "SNMPv2-MIB::sysORDescr"
+
+  enviromux_device_info:
+    walk:
+      - ENVIROMUXMICRO-MIB::unitName
+      - ENVIROMUXMICRO-MIB::deviceModel
+      - ENVIROMUXMICRO-MIB::serialNumber
+      - ENVIROMUXMICRO-MIB::firmwareRevision
+      - ENVIROMUXMICRO-MIB::senderEmailAddress
+      - ENVIROMUXMICRO-MIB::deviceLocation
+    max_repetitions: 1
+    timeout: 15s
+    overrides:
+      unitName:
+        type: DisplayString
+      deviceModel:
+        type: DisplayString
+      serialNumber:
+        type: DisplayString
+      firmwareRevision:
+        type: DisplayString
+      senderEmailAddress:
+        type: DisplayString
+      deviceLocation:
+        type: DisplayString
+
+  enviromux_int_sensors:
+    walk:
+      - ENVIROMUXMICRO-MIB::intSensorTable
+    max_repetitions: 1
+    timeout: 15s
+    lookups:
+      - source_indexes: [intSensorIndex]
+        lookup: ENVIROMUXMICRO-MIB::intSensorDescription
+        drop_source_indexes: true
+    overrides:
+      intSensorType:
+        type: EnumAsInfo
+      intSensorValue:
+        scale: 0.1
+      intSensorUnit:
+        type: EnumAsInfo
+
+  enviromux_dig_inputs:
+    walk:
+      - ENVIROMUXMICRO-MIB::digInputTable
+    max_repetitions: 1
+    timeout: 15s
+    lookups:
+      - source_indexes: [digInputIndex]
+        lookup: ENVIROMUXMICRO-MIB::digInputDescription
+        drop_source_indexes: true
+    overrides:
+      digInputValue:
+        type: EnumAsStateSet
+
+  enviromux_sm_alerts:
+    walk:
+      - ENVIROMUXMICRO-MIB::smAlertTable
+    max_repetitions: 1
+    timeout: 15s
+    overrides:
+      smAlertEnabled:
+        type: EnumAsStateSet
+      smAlertStatus:
+        type: EnumAsStateSet

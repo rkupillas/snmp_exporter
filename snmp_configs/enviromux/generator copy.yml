@@ -1,0 +1,139 @@
+auths:
+  public_v1:
+    version: 1
+    community: "public"
+  public_v2: # No anchor definition here, as per your working file
+    version: 2
+    community: "public"
+
+modules:
+  # Standard system information (often useful for any device)
+  system:
+    walk:
+      - "SNMPv2-MIB::system"
+    max_repetitions: 1
+    timeout: 15s
+    lookups:
+      - source_indexes: [sysORIndex]
+        lookup: "SNMPv2-MIB::sysORDescr"
+
+  enviromux_device_info:
+    walk:
+      - ENVIROMUXMICRO-MIB::unitName
+      - ENVIROMUXMICRO-MIB::deviceModel
+      - ENVIROMUXMICRO-MIB::serialNumber
+      - ENVIROMUXMICRO-MIB::firmwareRevision
+      - ENVIROMUXMICRO-MIB::senderEmailAddress
+      - ENVIROMUXMICRO-MIB::deviceLocation
+    max_repetitions: 1
+    timeout: 15s
+    overrides:
+      unitName:
+        type: DisplayString
+      deviceModel:
+        type: DisplayString
+      serialNumber:
+        type: DisplayString
+      firmwareRevision:
+        type: DisplayString
+      senderEmailAddress:
+        type: DisplayString
+      deviceLocation:
+        type: DisplayString
+
+  enviromux_int_sensors:
+    walk:
+      - ENVIROMUXMICRO-MIB::intSensorTable
+    max_repetitions: 1
+    timeout: 15s
+    lookups:
+      - source_indexes: [intSensorIndex]
+        lookup: ENVIROMUXMICRO-MIB::intSensorDescription
+        drop_source_indexes: true
+    overrides:
+      intSensorType:
+        type: EnumAsInfo
+      intSensorValue:
+        scale: 0.1
+      intSensorUnit:
+        type: EnumAsInfo
+
+  enviromux_ext_sensors:
+    walk:
+      - ENVIROMUXMICRO-MIB::extSensorTable
+    max_repetitions: 1
+    timeout: 15s
+    lookups:
+      - source_indexes: [extSensorIndex]
+        lookup: ENVIROMUXMICRO-MIB::extSensorDescription
+        drop_source_indexes: true
+    overrides:
+      extSensorType:
+        type: EnumAsInfo
+      extSensorValue:
+        scale: 0.1
+      extSensorUnit:
+        type: EnumAsInfo
+
+  enviromux_dig_inputs:
+    walk:
+      - ENVIROMUXMICRO-MIB::digInputTable
+    max_repetitions: 1
+    timeout: 15s
+    lookups:
+      - source_indexes: [digInputIndex]
+        lookup: ENVIROMUXMICRO-MIB::digInputDescription
+        drop_source_indexes: true
+    overrides:
+      digInputValue:
+        type: EnumAsStateSet
+
+  enviromux_ip_devices:
+    walk:
+      - ENVIROMUXMICRO-MIB::ipDeviceTable
+    max_repetitions: 1
+    timeout: 15s
+    lookups:
+      - source_indexes: [ipDeviceIndex]
+        lookup: ENVIROMUXMICRO-MIB::ipDeviceDescription
+        drop_source_indexes: true
+    overrides:
+      ipDeviceValue:
+        type: EnumAsStateSet
+
+  enviromux_alerts:
+    walk:
+      - ENVIROMUXMICRO-MIB::alertTable
+    max_repetitions: 1
+    timeout: 15s
+    lookups:
+      - source_indexes: [alertIndex]
+        lookup: ENVIROMUXMICRO-MIB::alertName
+        drop_source_indexes: true
+      - source_indexes: [alertIndex]
+        lookup: ENVIROMUXMICRO-MIB::alertSensor
+        drop_source_indexes: true
+    overrides:
+      alertEnabled:
+        type: EnumAsStateSet
+      alertThresholdType:
+        type: EnumAsInfo
+      alertStatus:
+        type: EnumAsStateSet
+      alertSensor:
+        type: DisplayString
+        ignore: true
+      alertName:
+        type: DisplayString
+        ignore: true
+
+  enviromux_sm_alerts:
+    walk:
+      - ENVIROMUXMICRO-MIB::smAlertTable
+    max_repetitions: 1
+    timeout: 15s
+    overrides:
+      smAlertEnabled:
+        type: EnumAsStateSet
+      smAlertStatus:
+        type: EnumAsStateSet
